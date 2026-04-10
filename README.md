@@ -12,4 +12,3 @@
 
 1. Установите PostgreSQL и создайте базу данных:
 ```sql
-CREATE DATABASE farm;

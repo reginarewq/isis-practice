@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Фермерское хозяйство - Учёт животных</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px;
+               margin: 0 auto; padding: 20px; background: #f0f7f0; }
+        
+        h1 { color: #2d5a2d; text-align: center; }
+        h2 { color: #3a7a3a; margin-top: 30px; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 20px 0;
+                background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #c8e6c8; padding: 10px; text-align: left; }
+        th { background: #2d5a2d; color: white; }
+        tr:hover { background: #e8f5e8; }
+        
+        .btn { padding: 8px 16px; border: none; border-radius: 5px;
+               cursor: pointer; color: white; margin: 3px; font-size: 14px; }
+        .btn-add { background: #4CAF50; }
+        .btn-edit { background: #ff9800; color: #333; }
+        .btn-delete { background: #f44336; }
+        .btn-save { background: #2196F3; }
+        .btn-cancel { background: #9e9e9e; }
+        
+        .form-group { margin: 12px 0; }
+        .form-group label { display: inline-block; width: 120px;
+                            font-weight: bold; color: #2d5a2d; }
+        .form-group input, .form-group select {
+            padding: 8px; width: 250px; border: 1px solid #c8e6c8;
+            border-radius: 4px; font-size: 14px;
+        }
+        
+        .form-panel { background: #e8f5e8; padding: 20px;
+                      border-radius: 10px; margin: 20px 0;
+                      display: none; border: 1px solid #a5d6a5; }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px;
+                flex-wrap: wrap; border-bottom: 2px solid #c8e6c8; padding-bottom: 10px; }
+        .tab { padding: 10px 20px; background: #e8f5e8; border: none;
+               border-radius: 8px 8px 0 0; cursor: pointer; font-size: 16px; }
+        .tab.active { background: #2d5a2d; color: white; }
+        
+        .stats { background: #e8f5e8; padding: 15px; border-radius: 8px;
+                 margin: 15px 0; text-align: center; }
+        .stats span { font-weight: bold; color: #2d5a2d; font-size: 20px; }
+        
+        .footer { text-align: center; margin-top: 30px;
+                  padding: 15px; color: #6c757d; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🐮 Фермерское хозяйство</h1>
+    
+    <div class="stats" id="stats">
+        📊 Загрузка...
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('animals')">🐄 Животные</button>
+        <button class="tab" onclick="showTab('feeds')">🌾 Корма</button>
+        <button class="tab" onclick="showTab('products')">🥛 Продукция</button>
+        <button class="tab" onclick="showTab('vaccinations')">💉 Прививки</button>
+        <button class="tab" onclick="showTab('customers')">👥 Покупатели</button>
+    </div>
+    
+    <!-- ==================== ЖИВОТНЫЕ ==================== -->
+    <div id="animals-tab">
+        <button class="btn btn-add" onclick="showAnimalForm()">➕ Добавить животное</button>
+        
+        <div id="animal-form-panel" class="form-panel">
+            <h3 id="animal-form-title">🐮 Новое животное</h3>
+            <div class="form-group">
+                <label>Бирка (номер):</label>
+                <input id="tag_number" placeholder="A001">
+            </div>
+            <div class="form-group">
+                <label>Кличка:</label>
+                <input id="name" placeholder="Бурёнка">
+            </div>
+            <div class="form-group">
+                <label>Вид:</label>
+                <select id="animal_type">
+                    <option value="корова">🐄 Корова</option>
+                    <option value="свинья">🐷 Свинья</option>
+                    <option value="курица">🐔 Курица</option>
+                    <option value="овца">🐑 Овца</option>
+                    <option value="коза">🐐 Коза</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Порода:</label>
+                <input id="breed" placeholder="Голштинская">
+            </div>
+            <div class="form-group">
+                <label>Дата рождения:</label>
+                <input id="birth_date" type="date">
+            </div>
+            <div class="form-group">
+                <label>Пол:</label>
+                <select id="gender">
+                    <option value="самка">Самка</option>
+                    <option value="самец">Самец</option>
+                </select>
+            </div>
+            <button class="btn btn-save" onclick="saveAnimal()">💾 Сохранить</button>
+            <button class="btn btn-cancel" onclick="hideAnimalForm()">Отмена</button>
+        </div>
+        
+         <table>
+            <thead>
+                <tr><th>ID</th><th>Бирка</th><th>Кличка</th>
+                    <th>Вид</th><th>Порода</th><th>Дата рожд.</th>
+                    <th>Пол</th><th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="animals-table"></tbody>
+         </table>
+    </div>
+    
+    <!-- ==================== КОРМА ==================== -->
+    <div id="feeds-tab" style="display:none">
+        <button class="btn btn-add" onclick="showFeedForm()">➕ Добавить корм</button>
+        
+        <div id="feed-form-panel" class="form-panel">
+            <h3>🌾 Новый корм</h3>
+            <div class="form-group">
+                <label>Название:</label>
+                <input id="feed_name" placeholder="Сено">
+            </div>
+            <div class="form-group">
+                <label>Тип:</label>
+                <select id="feed_type">
+                    <option value="сухой">Сухой</option>
+                    <option value="сочный">Сочный</option>
+                    <option value="концентрат">Концентрат</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Единица:</label>
+                <input id="unit" placeholder="кг">
+            </div>
+            <div class="form-group">
+                <label>Остаток:</label>
+                <input id="stock_quantity" type="number" placeholder="1000">
+            </div>
+            <button class="btn btn-save" onclick="saveFeed()">💾 Сохранить</button>
+            <button class="btn btn-cancel" onclick="hideFeedForm()">Отмена</button>
+        </div>
+        
+         <table>
+            <thead>
+                <tr><th>ID</th><th>Название</th><th>Тип</th>
+                    <th>Единица</th><th>Остаток</th><th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="feeds-table"></tbody>
+         </table>
+    </div>
+    
+    <!-- ==================== ПРОДУКЦИЯ ==================== -->
+    <div id="products-tab" style="display:none">
+        <button class="btn btn-add" onclick="showProductForm()">➕ Добавить продукцию</button>
+        
+        <div id="product-form-panel" class="form-panel">
+            <h3>🥛 Новая продукция</h3>
+            <div class="form-group">
+                <label>Животное:</label>
+                <select id="product_animal_id"></select>
+            </div>
+            <div class="form-group">
+                <label>Тип продукции:</label>
+                <select id="product_type">
+                    <option value="молоко">🥛 Молоко</option>
+                    <option value="яйца">🥚 Яйца</option>
+                    <option value="мясо">🍖 Мясо</option>
+                    <option value="шерсть">🐑 Шерсть</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Количество:</label>
+                <input id="product_quantity" type="number" step="0.1" placeholder="25.5">
+            </div>
+            <div class="form-group">
+                <label>Дата:</label>
+                <input id="production_date" type="date">
+            </div>
+            <button class="btn btn-save" onclick="saveProduct()">💾 Сохранить</button>
+            <button class="btn btn-cancel" onclick="hideProductForm()">Отмена</button>
+        </div>
+        
+         <table>
+            <thead>
+                <tr><th>ID</th><th>Животное</th><th>Тип</th>
+                    <th>Количество</th><th>Дата</th><th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="products-table"></tbody>
+         </table>
+    </div>
+    
+    <!-- ==================== ПРИВИВКИ ==================== -->
+    <div id="vaccinations-tab" style="display:none">
+        <button class="btn btn-add" onclick="showVaccinationForm()">➕ Добавить прививку</button>
+        
+        <div id="vaccination-form-panel" class="form-panel">
+            <h3>💉 Новая прививка</h3>
+            <div class="form-group">
+                <label>Животное:</label>
+                <select id="vacc_animal_id"></select>
+            </div>
+            <div class="form-group">
+                <label>Вакцина:</label>
+                <input id="vaccine_name" placeholder="Рабицин">
+            </div>
+            <div class="form-group">
+                <label>Дата прививки:</label>
+                <input id="vaccination_date" type="date">
+            </div>
+            <div class="form-group">
+                <label>Следующая дата:</label>
+                <input id="next_date" type="date">
+            </div>
+            <div class="form-group">
+                <label>Ветеринар:</label>
+                <input id="vet_name" placeholder="Петрова М.И.">
+            </div>
+            <button class="btn btn-save" onclick="saveVaccination()">💾 Сохранить</button>
+            <button class="btn btn-cancel" onclick="hideVaccinationForm()">Отмена</button>
+        </div>
+        
+         <table>
+            <thead>
+                <tr><th>ID</th><th>Животное</th><th>Вакцина</th>
+                    <th>Дата</th><th>Следующая</th><th>Ветеринар</th><th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="vaccinations-table"></tbody>
+         </table>
+    </div>
+    
+    <!-- ==================== ПОКУПАТЕЛИ ==================== -->
+    <div id="customers-tab" style="display:none">
+        <button class="btn btn-add" onclick="showCustomerForm()">➕ Добавить покупателя</button>
+        
+        <div id="customer-form-panel" class="form-panel">
+            <h3>👥 Новый покупатель</h3>
+            <div class="form-group">
+                <label>Фамилия:</label>
+                <input id="last_name" placeholder="Иванов">
+            </div>
+            <div class="form-group">
+                <label>Имя:</label>
+                <input id="first_name" placeholder="Иван">
+            </div>
+            <div class="form-group">
+                <label>Телефон:</label>
+                <input id="phone" placeholder="+7-999-123-45-67">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input id="email" placeholder="ivanov@mail.ru">
+            </div>
+            <div class="form-group">
+                <label>Адрес:</label>
+                <input id="address" placeholder="г. Москва, ул. Ленина 1">
+            </div>
+            <button class="btn btn-save" onclick="saveCustomer()">💾 Сохранить</button>
+            <button class="btn btn-cancel" onclick="hideCustomerForm()">Отмена</button>
+        </div>
+        
+         <table>
+            <thead>
+                <tr><th>ID</th><th>Фамилия</th><th>Имя</th>
+                    <th>Телефон</th><th>Email</th><th>Адрес</th><th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="customers-table"></tbody>
+         </table>
+    </div>
+    
+    <div class="footer">
+        🚜 Фермерское хозяйство | Учёт животных, кормов, продукции, прививок и покупателей
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
